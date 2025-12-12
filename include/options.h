@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-typedef struct options{
+typedef struct options {
 
 
 } options;

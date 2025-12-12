@@ -1,129 +1,70 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <pcap.h>
-#include <arpa/inet.h>
-#include <sys/types.h>
+#include "sniff_squid.h"
+#include "dash/dash.h"
 
-#include "options.h"
-
-#define SNAPLEN 1500 
-#define TIMEOUT 1000
-
-int main(int argc, char *argv[])
-{
-
-    if (argc<3){
-        fprintf(stderr,"Missing parameters %s\n",argv[0]);
-        exit(EXIT_FAILURE);
-    }
-
-    //----------------handling arguments---------------------
-
-    int opt;
-    while((opt= getopt(argc,argv,"fovi")) != -1){
-        switch(opt){
-            case 'i':
-            case 'o':
-            case 'f':
-            case 'v':
-        }
-    }
-
-
-    //TODO : handle arguments 
-
-    //----------------looking for the interface --------------------------
-
-     
-	char *dev, errbuf[PCAP_ERRBUF_SIZE];
-    struct in_addr addr ;
-	dev = pcap_lookupdev(errbuf);
-	if (dev == NULL) {
-		fprintf(stderr, "Couldn't find default device: %s\n", errbuf);
-		return(2);
-	}
-	printf("Device: %s\n", dev);
-
-    pcap_t* session ;
-    //---------------------Live Capture--------------------------
-
-
-    if (argv[1]=='-i'){
-        errbuf[0]=""; //storing a zero-length string in errbuf to handle the case where pcap_open_live returns a warning after succeed 
-        while (1){
-            if (argv[1]=="-i"){
-                session= pcap_open_live(dev,SNAPLEN,1,TIMEOUT,errbuf);
-                if(session==NULL){
-                    fprintf(stderr, "Couldn't open capture: %s\n", errbuf);
-                    return(2);
-                }
-                else if(strlen(errbuf!= 0)){
-                    fprintf(stdout,"WARNING during opening capture: %s\n",errbuf);
-                }
-            }
-            else if(argv[1]=="-f"){
-
-            }
-        }
-    }
-    
-
-    //----------------Offline Capture------------------------------
-
-    session= pcap_open_offline(argv[4],errbuf);
-
-    //--------------------------handling filters------------------------
-
-
-    char ip[13];
-    char subnet_mask[13];
-    bpf_u_int32 ip_raw; /* IP address as integer */
-    bpf_u_int32 subnet_mask_raw;
-    struct in_addr address; /* Used for both ip & subnet */
-    int lookup_net;
-
-    /* Get device info */
-    lookup_net = pcap_lookupnet(
-        dev,
-        &ip_raw,
-        &subnet_mask_raw,
-        errbuf
-    );
-    if (lookup_net == -1) {
-        printf("Error while fetching IP address and network mask %s\n", errbuf);
-        exit(EXIT_FAILURE);
-    }
-
-
-    struct bpf_program *fp;
+typedef struct arguments {
+    char* verbosity;
+    char* offline;
+    char* interface;
     char* filter;
-    //TODO : add the filters in the filter variable 
-
-    //compile filter
-    int compiled_filter = pcap_compile(session, fp,filter,0,subnet_mask_raw);
-
-    //associate filter to capture 
-    int set_filter= pcap_setfilter(session,fp);
+    bool help;
+} Arguments;
 
 
-    //----------------------handling verbosity---------------------------
+int main(int argc, char* argv[])
+{
+    int return_code = EXIT_FAILURE;
+    Arguments args;
+    int verbosity = 1;
+    // TODO: change descriptions
+    dash_Longopt options[] = {
+        {.user_pointer = &(args.help), .longopt_name = "help", .opt_name = 'h', .description = "Send help "},
+        {.user_pointer = &(args.interface),
+         .longopt_name = "interface",
+         .opt_name     = 'i',
+         .param_name   = "interface",
+         .description  = "Listen on $ (if unset, trigger a prompt)"},
+        {.user_pointer = &(args.filter), .longopt_name = "filter", .opt_name = 'f', .param_name = "filter", .description = "A pcap $ to only get some packets."},
+        {.user_pointer = &(args.offline),
+         .longopt_name = "offline",
+         .opt_name     = 'o',
+         .param_name   = "file",
+         .description  = "An input $ that can be used instead of sniffing the network"},
+        {.user_pointer = &(args.verbosity),
+         .longopt_name = "verbosity",
+         .opt_name     = 'v',
+         .param_name   = "level",
+         .description  = "Set the verbosity to $, authorized levels are 1, 2 or 3 (default: 3)"},
+        {.user_pointer = NULL}
+    };
 
+    if(!dash_arg_parser(&argc, argv, options))
+    {
+        fputs("incorrect arguments\n", stderr);
+        goto FREE;
+    }
 
-    
+    if(args.help)
+    {
 
+        dash_print_usage(argv[0], "", "", NULL, options, stderr);
+    }
 
-    //-------------------Analysing Captures--------------------------
-    
-    struct pcap_pkthr * header;
-    char* args ;
-    char* packet;
-    struct pcap_handler callback;
-    got_packet(args,header,packet);l
-    int loop= pcap_loop(session,-1,callback,)
+    if(args.verbosity)
+    {
+        verbosity = atoi(args.verbosity);
+        if(verbosity < 1 || verbosity > 3)
+        {
+            fprintf(stderr, "verbosity should take one of these values : 1,2 or 3\n");
+            goto FREE;
+        }
+    }
 
+    read_capture(verbosity, args.interface, args.filter, args.offline);
 
-    //------------------Closing Capture--------------------------------    
-    pcap_close(session);
-	return(0);
+    return_code = EXIT_SUCCESS;
+FREE:
+    dash_free(options);
+    return return_code;
 }

@@ -1,0 +1,150 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <pcap.h>
+#include <arpa/inet.h>
+#include <sys/types.h>
+
+#include "options.h"
+
+#define SNAPLEN 1500 
+#define TIMEOUT 1000
+
+int main(int argc, char *argv[])
+{
+
+    if (argc<3){
+        fprintf(stderr,"Missing parameters %s\n",argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    //----------------handling arguments---------------------
+
+    int opt;
+    while((opt= getopt(argc,argv,"fovi")) != -1){
+        switch(opt){
+            case 'i':
+            case 'o':
+            case 'f':
+            case 'v':
+        }
+    }
+
+
+    //TODO : handle arguments 
+
+    //----------------looking for the interface --------------------------
+
+     
+	char *dev, errbuf[PCAP_ERRBUF_SIZE];
+    struct in_addr addr ;
+	dev = pcap_lookupdev(errbuf);
+	if (dev == NULL) {
+		fprintf(stderr, "Couldn't find default device: %s\n", errbuf);
+		return(2);
+	}
+	printf("Device: %s\n", dev);
+
+
+    pcap_t* session ;
+    //---------------------Live Capture--------------------------
+
+
+    if (argv[1]=='-i'){
+        errbuf[0]=""; //storing a zero-length string in errbuf to handle the case where pcap_open_live returns a warning after succeed 
+        while (1){
+            if (argv[1]=="-i"){
+                session= pcap_open_live(dev,SNAPLEN,1,TIMEOUT,errbuf);
+                if(session==NULL){
+                    fprintf(stderr, "Couldn't open capture: %s\n", errbuf);
+                    return(2);
+                }
+                else if(strlen(errbuf!= 0)){
+                    fprintf(stdout,"WARNING during opening capture: %s\n",errbuf);
+                }
+            }
+            else if(argv[1]=="-f"){
+
+            }
+        }
+    }
+    
+
+    //----------------Offline Capture------------------------------
+
+    session= pcap_open_offline(argv[4],errbuf);
+
+    //--------------------------handling filters------------------------
+
+
+    char ip[13];
+    char subnet_mask[13];
+    bpf_u_int32 ip_raw; /* IP address as integer */
+    bpf_u_int32 subnet_mask_raw;
+    struct in_addr address; /* Used for both ip & subnet */
+    int lookup_net;
+
+    /* Get device info */
+    lookup_net = pcap_lookupnet(
+        dev,
+        &ip_raw,
+        &subnet_mask_raw,
+        errbuf
+    );
+    if (lookup_net == -1) {
+        printf("Error while fetching IP address and network mask %s\n", errbuf);
+        exit(EXIT_FAILURE);
+    }
+
+
+    struct bpf_program *fp;
+    char* filter;
+    //TODO : add the filters in the filter variable 
+
+    //compile filter
+    int compiled_filter = pcap_compile(session, fp,filter,0,subnet_mask_raw);
+
+    //associate filter to capture 
+    int set_filter= pcap_setfilter(session,fp);
+
+
+    //----------------------handling verbosity---------------------------
+
+
+    
+
+
+    //-------------------Analysing Captures--------------------------
+    
+    struct pcap_pkthr * header;
+    char* args ;
+    char* packet;
+    void packetHandler(unsigned char *userData, const struct pcap_pkthdr* pkthdr, const unsigned char* packet) ;
+
+    got_packet(args,header,packet);
+    int loop;
+    if(loop= pcap_dispatch(session,-1,packetHandler,NULL)<0){
+        printf("\npcap_loop() failed : %s\n",pcap_geterr(session));
+        return 0;
+    }
+
+
+    //------------------Closing Capture--------------------------------    
+    pcap_close(session);
+	return(0);
+}
+
+void packetHandler(unsigned char *userData, const struct pcap_pkthdr* pkthdr, const unsigned char* packet) {
+
+    const struct ether_header* ethernetHeader;
+    const struct ip* ipHeader;
+    const struct tcphdr* tcpHeader;
+    const struct udphdr* udpHeader;
+    char sourceIP[INET_ADDRSTRLEN];
+    char destIP[INET_ADDRSTRLEN];
+    unsigned int sourcePort, destPort;
+    unsigned char *data;
+    int dataLength = 0;
+
+
+}

@@ -1,0 +1,56 @@
+[
+    {
+        "directory": "/home/noix/Documents/dossier_unistra/2ARIO/Services_Reseaux/sniff_squid",
+        "arguments": [
+            "/usr/bin/gcc",
+            "-c",
+            "-o",
+            "build/.objs/Linux/x64/release/main.c.o",
+            "main.c",
+            "-DNDEBUG",
+            "-I./include",
+            "-O3",
+            "-fdiagnostics-color",
+            "-Wall",
+            "-Wextra"
+        ],
+        "output": "build/.objs/Linux/x64/release/main.c.o",
+        "file": "main.c"
+    },
+    {
+        "directory": "/home/noix/Documents/dossier_unistra/2ARIO/Services_Reseaux/sniff_squid",
+        "arguments": [
+            "/usr/bin/gcc",
+            "-c",
+            "-o",
+            "build/.objs/Linux/x64/release/src/ethernet.c.o",
+            "src/ethernet.c",
+            "-DNDEBUG",
+            "-I./include",
+            "-O3",
+            "-fdiagnostics-color",
+            "-Wall",
+            "-Wextra"
+        ],
+        "output": "build/.objs/Linux/x64/release/src/ethernet.c.o",
+        "file": "src/ethernet.c"
+    },
+    {
+        "directory": "/home/noix/Documents/dossier_unistra/2ARIO/Services_Reseaux/sniff_squid",
+        "arguments": [
+            "/usr/bin/gcc",
+            "-c",
+            "-o",
+            "build/.objs/Linux/x64/release/dash/dash.c.o",
+            "dash/dash.c",
+            "-DNDEBUG",
+            "-I./include",
+            "-O3",
+            "-fdiagnostics-color",
+            "-Wall",
+            "-Wextra"
+        ],
+        "output": "build/.objs/Linux/x64/release/dash/dash.c.o",
+        "file": "dash/dash.c"
+    }
+]
