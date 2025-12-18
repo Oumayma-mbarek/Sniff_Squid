@@ -1,3 +1,4 @@
+#include <netinet/in.h>
 #include <pcap.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -8,12 +9,20 @@
 #include "network/ipv4.h"
 #include "network/ipv6.h"
 #include "network/arp.h"
+#include "transport/udp.h"
+#include "transport/tcp.h"
+#include "application/bootp.h"
+#include "application/text.h"
+#include "application/telnet.h"
 
 static void packetHandler(u_char* user, const struct pcap_pkthdr* header, const unsigned char* bytes)
 {
     int verbosity = *((int*)user);
     uint16_t ether_type;
     uint8_t ip_protocol;
+    uint16_t src_port ;
+    uint16_t dst_port;
+
     const unsigned char* end = bytes + header->caplen;
     // display ethernet and move pointer to first byte of next protocol
     if((bytes = parse_ethernet_header(bytes, end, verbosity, &ether_type)) == NULL)
@@ -24,7 +33,6 @@ static void packetHandler(u_char* user, const struct pcap_pkthdr* header, const 
     switch(ether_type)
     {
         case ETHERTYPE_IP:
-
             bytes = parse_ipv4_header(bytes, end, verbosity, &ip_protocol);
             break;
         case ETHERTYPE_IPV6:
@@ -33,8 +41,34 @@ static void packetHandler(u_char* user, const struct pcap_pkthdr* header, const 
         case ETHERTYPE_ARP:
             parse_arp_header(bytes, end, verbosity);
             return;
-            break;
+        default:
+            return;
     }
+    switch(ip_protocol)
+    {
+        case IPPROTO_UDP:
+            bytes= parse_udp_header(bytes,end,verbosity,&src_port,&dst_port);
+            break;
+        case IPPROTO_TCP:
+            bytes= parse_tcp_header(bytes,end,verbosity,&src_port, &dst_port);
+            break;
+        default:
+            return;
+    }
+    if(src_port== 68 || dst_port== 68 || src_port==67 || dst_port == 67 )
+    {
+        bytes= parse_bootp_header(bytes,end,verbosity);
+    }
+    if(src_port == 80 || dst_port==80 || src_port==21 || dst_port==21 || src_port==20 || dst_port==20 || src_port== 25 || dst_port == 25 || src_port == 143 || dst_port==143 || src_port == 110 || dst_port==110 )
+    {
+        bytes= parse_text (bytes,end,verbosity);
+    }
+    if(src_port == 23 || dst_port == 23)
+    {
+        bytes=parse_telnet(bytes,end,verbosity);
+    }
+
+
 }
 
 int read_capture(int verbosity, char* interface_name, char* filter, char* offline_filename)

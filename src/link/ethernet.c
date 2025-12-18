@@ -8,6 +8,7 @@ const unsigned char* parse_ethernet_header(
     const unsigned char* bytes, const unsigned char* end, int verbosity, uint16_t* ether_type
 )
 {
+    printf("-------Ethernet-------\n");
     if((end - bytes) < sizeof(struct ether_header))
     {
         return NULL;
@@ -22,6 +23,7 @@ const unsigned char* parse_ethernet_header(
     *ether_type = be16toh(eth->ether_type);
     printf("ether_type: 0x%04x\n", *ether_type);
     // TODO : add switch case to print ether type
+    printf("----------------------\n");
     return bytes + sizeof(struct ether_header);
 }
 
