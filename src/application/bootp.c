@@ -7,7 +7,26 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-
+static const char* dhcp_message_type[] = {
+    "DISCOVER" ,
+    "OFFER" ,
+    "REQUEST" ,
+    "DECLINE" ,
+    "ACK" ,
+    "NACK" ,
+    "RELEASE" ,
+    "INFORM" ,
+    "FORCE_RENEW" ,
+    "LEASE_QUERY" ,
+    "LEASE_UNASSIGNED" ,
+    "LEASE_UNKNOWN" ,
+    "LEASE_ACTIVE" ,
+    "BULK_LEASE_QUERY" ,
+    "LEASE_QUERY_DONE" ,
+    "ACTIVE_LEASE_QUERY" ,
+    "LEASE_QUERY_STATUS" ,
+    "TLS" 
+};
 static void print_dhcp_tlv_type(uint8_t type)
 {
     switch(type)

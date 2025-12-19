@@ -2,47 +2,8 @@
 #define BOOTP_H 
 #include <stdint.h>
 
-enum DHCP_MESSAGE_TYPES
-{
-    DHCP_DISCOVER = 1,
-    DHCP_OFFER = 2,
-    DHCP_REQUEST = 3,
-    DHCP_DECLINE = 4,
-    DHCP_ACK = 5,
-    DHCP_NACK = 6,
-    DHCP_RELEASE = 7,
-    DHCP_INFORM = 8,
-    DHCP_FORCE_RENEW = 9,
-    DHCP_LEASE_QUERY = 10,
-    DHCP_LEASE_UNASSIGNED = 11,
-    DHCP_LEASE_UNKNOWN = 12,
-    DHCP_LEASE_ACTIVE = 13,
-    DHCP_BULK_LEASE_QUERY = 14,
-    DHCP_LEASE_QUERY_DONE = 15,
-    DHCP_ACTIVE_LEASE_QUERY = 16,
-    DHCP_LEASE_QUERY_STATUS = 17,
-    DHCP_TLS = 18
-};
-static const char* dhcp_message_type[] = {
-    "DISCOVER" ,
-    "OFFER" ,
-    "REQUEST" ,
-    "DECLINE" ,
-    "ACK" ,
-    "NACK" ,
-    "RELEASE" ,
-    "INFORM" ,
-    "FORCE_RENEW" ,
-    "LEASE_QUERY" ,
-    "LEASE_UNASSIGNED" ,
-    "LEASE_UNKNOWN" ,
-    "LEASE_ACTIVE" ,
-    "BULK_LEASE_QUERY" ,
-    "LEASE_QUERY_DONE" ,
-    "ACTIVE_LEASE_QUERY" ,
-    "LEASE_QUERY_STATUS" ,
-    "TLS" 
-};
+
+
 //TODO: add all dhcp options from rfc 2132 and handle them 
 //this is a non complete list of dhcp options but it contains the most
 //important ones 
