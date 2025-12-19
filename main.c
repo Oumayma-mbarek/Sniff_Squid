@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
 {
     int return_code = EXIT_FAILURE;
     Arguments args;
-    int verbosity = 1;
+    int verbosity = 3;
     // TODO: change descriptions
     dash_Longopt options[] = {
         {.user_pointer = &(args.help), .longopt_name = "help", .opt_name = 'h', .description = "Send help "},

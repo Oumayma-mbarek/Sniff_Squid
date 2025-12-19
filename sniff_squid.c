@@ -14,6 +14,7 @@
 #include "application/bootp.h"
 #include "application/text.h"
 #include "application/telnet.h"
+#include "application/dns.h"
 
 static void packetHandler(u_char* user, const struct pcap_pkthdr* header, const unsigned char* bytes)
 {
@@ -66,6 +67,10 @@ static void packetHandler(u_char* user, const struct pcap_pkthdr* header, const 
     if(src_port == 23 || dst_port == 23)
     {
         bytes=parse_telnet(bytes,end,verbosity);
+    }
+    if(src_port==53 || dst_port==53)
+    {
+        bytes = parse_dns_header(bytes,end,verbosity);
     }
 
 

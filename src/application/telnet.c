@@ -301,16 +301,35 @@ const unsigned char* parse_telnet( const unsigned char* bytes, const unsigned ch
 {
     ssize_t length = (ssize_t)end - (ssize_t)bytes; 
     //go through lines 
-    printf("------------ MESSAGE ----------------\n");
-    for (ssize_t i=0 ; i < length ; i++ )
+    if(verbosity==3)
     {
-        if(bytes[i] == 0xff)
+        printf("------------ TELNET MESSAGE ----------------\n");
+        for (ssize_t i=0 ; i < length ; i++ )
         {
-            i+=parse_special_command(bytes,end,i+1);
-            continue;
+            if(bytes[i] == 0xff)
+            {
+                i+=parse_special_command(bytes,end,i+1);
+                continue;
+            }
+            printf("%c" , bytes[i]);
         }
-        printf("%c" , bytes[i]);
+        printf("\n------------- End of Telnet Message --------------\n");
     }
-    printf("\n------------- End of Message --------------\n");
+    else if(verbosity==2)
+    {
+        printf("TELNET: ");
+        int to_display;
+        to_display = (length<20?length:20);
+        for(int i=0;i<to_display;i++)
+        {
+            if(bytes[i]!='\n')
+                putchar(bytes[i]);
+        }
+        putchar('\n');
+    }
+    else if(verbosity==1)
+    {
+        printf("Telnet ");
+    }
     return 0;
 }

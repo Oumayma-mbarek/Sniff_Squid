@@ -13,52 +13,52 @@ static void print_dhcp_tlv_type(uint8_t type)
     switch(type)
     {
         case DHCP_SUBNET_MASK:
-            printf(" (Subnet Mask)");
+            printf(" (Subnet Mask)\n");
             break;
         case DHCP_ROUTER:
-            printf(" (Router)");
+            printf(" (Router)\n");
             break;
         case DHCP_DOMAIN_NAME_SERVER:
-            printf(" (Domain Name Server)");
+            printf(" (Domain Name Server)\n");
             break;
         case DHCP_HOSTNAME:
-            printf(" (Hostname)");
+            printf(" (Hostname)\n");
             break;
         case DHCP_DOMAIN_NAME:
-            printf(" (Domain Name)");
+            printf(" (Domain Name)\n");
             break;
         case DHCP_NTP_SERVERS:
-            printf(" (NTP Servers Addresses)");
+            printf(" (NTP Servers Addresses)\n");
             break;
         case DHCP_ADDRESS_REQUEST:
-            printf(" (Requested IP Address)");
+            printf(" (Requested IP Address)\n");
             break;
         case DHCP_LEASE_TIME:
-            printf(" (IP Address Lease Time)");
+            printf(" (IP Address Lease Time)\n");
             break;
         case DHCP_MESSAGE_TYPE:
-            printf(" (Message Type)");
+            printf(" (Message Type)\n");
             break;
         case DHCP_SERVER_ID:
-            printf(" (Server Identifier)");
+            printf(" (Server Identifier)\n");
             break;
         case DHCP_RENEWAL:
-            printf(" (Renewal Time)");
+            printf(" (Renewal Time)\n");
             break;
         case DHCP_REBINDING:
-            printf(" (Rebinding Time)");
+            printf(" (Rebinding Time)\n");
             break;
         case DHCP_PARAMETER_REQUEST_LIST:
-            printf(" (Parameter Request List)");
+            printf(" (Parameter Request List)\n");
             break;
         case DHCP_CLIENT_ID:
-            printf(" (Client Identifier)");
+            printf(" (Client Identifier)\n");
             break;
     }
 }
 void parse_dhcp_tlv(const unsigned char* bytes, const unsigned char* end)
 {
-    printf("Magic Cookie : %08x\n",be64toh(*((uint64_t*)bytes)));
+    printf("Magic Cookie : 0x%08x\n",be32toh(*((uint32_t*)bytes)));
     bytes+=4;
     while(bytes<end)
     {
@@ -87,7 +87,7 @@ void parse_dhcp_tlv(const unsigned char* bytes, const unsigned char* end)
         {
             return ;
         }
-        printf("Type: %d",type);
+        printf("Type: %d\n",type);
         print_dhcp_tlv_type(type);
         printf("Length : %d\n",length);
         printf("Value : ");
@@ -165,59 +165,88 @@ const unsigned char* parse_bootp_header(const unsigned char* bytes, const unsign
     }
     bool dhcp = false;
     struct bootphdr* bootphdr = (struct bootphdr* ) bytes;
-    uint8_t dhcp_cookie[4] = {0x63, 0x82, 0x53, 0x64};
-
-    if (memcmp(bootphdr->vend, dhcp_cookie, 4) == 0)    {
+    uint8_t dhcp_cookie[4] = {0x63, 0x82, 0x53, 0x63};
+    if (memcmp(bootphdr->vend, dhcp_cookie, 4) == 0)   
+    {
         dhcp = true;
-        printf("------------ DHCP -------------\n");
     }
-    else 
+    if(verbosity==3)
     {
-        printf("---------- BOOTP -----------\n");
-    }
-    char address[INET_ADDRSTRLEN];
-    char* hardware_address;
-
-    printf("Operation Code (1:Request, 2:Reply): %u\n",bootphdr->op);
-    printf("Hardware address type : %u\n",bootphdr->htype);
-    printf("Hardware address length : %u\n",bootphdr->hlen);
-    printf("Hop count : %u\n",bootphdr->hops);
-    printf("Transaction ID : %08x\n",be32toh(bootphdr->xid));
-    printf("Seconds : %u\n",be16toh(bootphdr->secs));
-    printf("Flags : %u\n",bootphdr->flags);
-    inet_ntop(AF_INET, &(bootphdr->ciaddr), address, INET_ADDRSTRLEN);
-    printf("Client IP address = %s\n", address);    
-    inet_ntop(AF_INET, &(bootphdr->yiaddr), address, INET_ADDRSTRLEN);
-    printf("Your IP address = %s\n", address);
-    inet_ntop(AF_INET, &(bootphdr->siaddr), address, INET_ADDRSTRLEN);
-    printf("Server IP address = %s\n", address);
-    inet_ntop(AF_INET, &(bootphdr->giaddr), address, INET_ADDRSTRLEN);
-    printf("Gateway IP address = %s\n", address);
-    if(bootphdr->htype==1)
-    {
-        hardware_address = ether_ntoa((struct ether_addr*)&(bootphdr->chaddr));
-        printf("Client Hardware Address : %s\n", hardware_address);
-    }
-    printf("Server Hostname : %s\n", bootphdr->sname);
-    printf("File : %s\n", bootphdr->file);
-    printf("Vendor :");
-    if(dhcp)
-    {
-        parse_dhcp_tlv( bootphdr->vend, end);
-    }
-    else 
-    {   
-        if(bootphdr->vend + 64 > end)
+        if(dhcp)
         {
-            return NULL;
+            printf("------------ DHCP -------------\n");
         }
-        for (int i=0;i<64;i++)
+        else 
         {
-            printf("%02x ",bootphdr->vend[i]);
+            printf("---------- BOOTP -----------\n");
         }
-    }
+        char address[INET_ADDRSTRLEN];
+        char* hardware_address;
     
-    printf("\n");
-
+        printf("Operation Code (1:Request, 2:Reply): %u\n",bootphdr->op);
+        printf("Hardware address type : %u\n",bootphdr->htype);
+        printf("Hardware address length : %u\n",bootphdr->hlen);
+        printf("Hop count : %u\n",bootphdr->hops);
+        printf("Transaction ID : %08x\n",be32toh(bootphdr->xid));
+        printf("Seconds : %u\n",be16toh(bootphdr->secs));
+        printf("Flags : %u\n",bootphdr->flags);
+        inet_ntop(AF_INET, &(bootphdr->ciaddr), address, INET_ADDRSTRLEN);
+        printf("Client IP address = %s\n", address);    
+        inet_ntop(AF_INET, &(bootphdr->yiaddr), address, INET_ADDRSTRLEN);
+        printf("Your IP address = %s\n", address);
+        inet_ntop(AF_INET, &(bootphdr->siaddr), address, INET_ADDRSTRLEN);
+        printf("Server IP address = %s\n", address);
+        inet_ntop(AF_INET, &(bootphdr->giaddr), address, INET_ADDRSTRLEN);
+        printf("Gateway IP address = %s\n", address);
+        if(bootphdr->htype==1)
+        {
+            hardware_address = ether_ntoa((struct ether_addr*)&(bootphdr->chaddr));
+            printf("Client Hardware Address : %s\n", hardware_address);
+        }
+        printf("Server Hostname : %s\n", bootphdr->sname);
+        printf("File : %s\n", bootphdr->file);
+        printf("\t\tVendor :\n");
+        if(dhcp)
+        {
+            parse_dhcp_tlv( bootphdr->vend, end);
+        }
+        else 
+        {   
+            if(bootphdr->vend + 64 > end)
+            {
+                return NULL;
+            }
+            for (int i=0;i<64;i++)
+            {
+                printf("%02x ",bootphdr->vend[i]);
+            }
+        }
+        
+        printf("\n");
+    }
+    else if(verbosity==2)
+    {
+        if(dhcp)
+        {
+            printf("DHCP:  ");
+            printf("Operation code: %u\n",bootphdr->op);
+        }
+        else 
+        {
+            printf("BOOTP");
+            printf("Operation code: %u\n",bootphdr->op);
+        }
+    }
+    else if(verbosity==1)
+    {
+        if(dhcp)
+        {
+            printf("DHCP:  ");
+        }
+        else 
+        {
+            printf("BOOTP");
+        } 
+    }
     return end;
 }
