@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "sniff_squid.h"
-#include "dash/dash.h"
+#include "../dash/dash.h"
 
 typedef struct arguments {
     char* verbosity;
