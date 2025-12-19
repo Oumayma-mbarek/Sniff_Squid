@@ -6,14 +6,14 @@
 
 const unsigned char* parse_ipv4_header(const unsigned char* bytes, const unsigned char* end, int verbosity, uint8_t* protocol)
 {
-    if((end - bytes) < sizeof(struct ip))
+    if(bytes+ sizeof(struct ip)>end)
     {
         return NULL;
     }
     struct ip* ip = (struct ip*)bytes;
     if(verbosity==3)
     {
-        printf("---------------- IPV4 ------------------\n");
+        printf("---------- IPV4 ----------\n");
         char address[INET_ADDRSTRLEN];
         printf("version : %u\n", ip->ip_v);
         printf("Header length : %u\n", ip->ip_hl);

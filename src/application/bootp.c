@@ -159,7 +159,7 @@ void parse_dhcp_tlv(const unsigned char* bytes, const unsigned char* end)
 }
 const unsigned char* parse_bootp_header(const unsigned char* bytes, const unsigned char* end, int verbosity)
 {
-    if((end - bytes) < sizeof(struct bootphdr))
+    if( bytes + sizeof(struct bootphdr) > end)
     {
         return NULL;
     }

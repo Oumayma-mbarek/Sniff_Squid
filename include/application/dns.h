@@ -12,5 +12,15 @@ struct dnshdr
     uint16_t arcount;
 
 };
+const unsigned char* parse_dns_name(
+    const unsigned char* base,
+    const unsigned char* ptr,
+    const unsigned char* end,
+    int depth);
+const unsigned char* parse_rr(
+    const unsigned char* base,
+    const unsigned char* ptr,
+    const unsigned char* end);
+
 const unsigned char* parse_dns_header(const unsigned char* bytes,const unsigned char* end, int verbosity);
 #endif 

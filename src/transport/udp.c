@@ -7,14 +7,14 @@
 const unsigned char* parse_udp_header(const unsigned char* bytes,const unsigned char* end, int verbosity , uint16_t* src_port, uint16_t* dst_port)
 {
     
-    if((end - bytes) < sizeof(struct udphdr))
+    if(bytes+ sizeof(struct udphdr) > end)
     {
         return NULL;
     }
     struct udphdr* udphdr = (struct udphdr*) bytes;
     if(verbosity==3)
     {
-        printf("-------------- UDP ----------\n");
+        printf("-------------- UDP -----------\n");
         printf("Source Port : %u\n", be16toh(udphdr->source));
         printf("Destination Port : %u\n",be16toh(udphdr->dest));
         printf("UDP Length : %u\n",be16toh(udphdr->len));

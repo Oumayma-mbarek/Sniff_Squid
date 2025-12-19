@@ -7,7 +7,7 @@
 
 const unsigned char* parse_ipv6_header(const unsigned char* bytes, const unsigned char* end, int verbosity, uint8_t* protocol)
 {
-    if((end - bytes) < sizeof(struct ip6_hdr))
+    if(bytes+ sizeof(struct ip6_hdr)>end)
     {
         return NULL;
     }

@@ -7,7 +7,7 @@
 
 const unsigned char* parse_arp_header(const unsigned char* bytes, const unsigned char* end, int verbosity)
 {
-    if((end - bytes) < sizeof(struct arphdr))
+    if(bytes+ sizeof(struct arphdr)>end)
     {
         return NULL;
     }

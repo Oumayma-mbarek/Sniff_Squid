@@ -8,7 +8,7 @@ const unsigned char* parse_ethernet_header(
     const unsigned char* bytes, const unsigned char* end, int verbosity, uint16_t* ether_type
 )
 {
-    if((end - bytes) < sizeof(struct ether_header))
+    if(bytes+ sizeof(struct ether_header)>end)
     {
         return NULL;
     }
@@ -17,7 +17,7 @@ const unsigned char* parse_ethernet_header(
 
     if(verbosity==3)
     {
-        printf("-------Ethernet-------\n");
+        printf("--------Ethernet--------\n");
         char* address;
         address = ether_ntoa((struct ether_addr*)eth->ether_dhost);
         printf("destination: %s\n", address);
@@ -25,7 +25,7 @@ const unsigned char* parse_ethernet_header(
         printf("source: %s\n", address);
         printf("ether_type: 0x%04x\n", *ether_type);
         // TODO : add switch case to print ether type
-        printf("----------------------\n");
+        printf("--------------------------\n");
 
     }
     else if(verbosity==2)
