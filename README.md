@@ -52,13 +52,19 @@ python3 makefile.py -h
 
 ### Running  
 the binary is located in ``` ./build/Linux/x64/release/bin/sniff_squid```.
+
 The program supports both offline and live captures. 
-for live captures the interface should be specified using the ``` -i <interface>``` option 
+
+For live captures the interface should be specified using the ``` -i <interface>``` option 
 example: ```sudo ./build/Linux/x64/release/bin/sniff_squid -i wlan0 ```
+
 For offline captures, the name of a valid file should be specified after the ``` -o <file> ``` option: 
 example: ```sudo ./build/Linux/x64/release/bin/sniff_squid -o offline_captures/http.cap ```
+
 The offline mode reads .cap, .pcap or .pcapng files.
+
 Filters can be added using the ``` -f <filter>``` option.
+
 Another supported option is the ``` -v [1-3] ``` which specified a verbosity level between 1 and 3, 3 being the most verbose, 2 displays a single line for each protocol and 1 displays the whole packet in a single line 
 
 Eventually ``` -h ``` option displays help 
